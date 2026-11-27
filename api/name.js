@@ -13,7 +13,7 @@ import { createClient } from '@supabase/supabase-js';
 const modelConfigMap = {
   doubao: {
     label: '豆包（火山方舟）',
-    baseURL: process.env.DOUBAO_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v1',
+    baseURL: process.env.DOUBAO_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3',
     apiKey: process.env.DOUBAO_API_KEY,
     model: process.env.DOUBAO_MODEL || 'doubao-pro-32k',
   },
