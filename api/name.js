@@ -15,7 +15,7 @@ const modelConfigMap = {
     label: '豆包（火山方舟）',
     baseURL: process.env.DOUBAO_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3',
     apiKey: process.env.DOUBAO_API_KEY,
-    model: process.env.DOUBAO_MODEL || 'doubao-pro-32k',
+    model: process.env.DOUBAO_MODEL || 'doubao-seed-2-1-pro-260628',
   },
   deepseek: {
     label: 'DeepSeek',
@@ -143,6 +143,10 @@ export default async function handler(req, res) {
         stream: true,
         temperature: 0.85,
         max_tokens: 1600,
+        // 豆包 Seed 系列默认开启深度思考，起名这类任务不需要，可通过环境变量关闭以降低首字延迟
+        ...(process.env.DOUBAO_THINKING === 'disabled'
+          ? { thinking: { type: 'disabled' } }
+          : {}),
       }),
     });
 
