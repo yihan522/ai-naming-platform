@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 起名平台 · rangzijigenghao.online</title>
+<style>
+  :root{
+    --pink:#ff7eb6; --pink-soft:#fff0f6; --pink-deep:#d6336c;
+    --green:#2ecc8f; --green-soft:#eafff6; --green-deep:#1a8f62;
+    --ink:#2b2b33; --muted:#8a8698; --line:#f0ecf4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;padding:0;min-height:100vh;color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+    background:
+      radial-gradient(900px 500px at 12% -8%, #ffe6f0 0%, transparent 62%),
+      radial-gradient(800px 520px at 92% 8%, #dff9ec 0%, transparent 60%),
+      #fdfcff;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:36px 20px 64px;}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:26px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{
+    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;
+    background:linear-gradient(135deg,var(--pink),var(--green));color:#fff;
+    box-shadow:0 8px 20px rgba(255,126,182,.28);font-weight:700;
+  }
+  .brand h1{font-size:22px;margin:0;letter-spacing:.5px;}
+  .brand p{margin:2px 0 0;font-size:12px;color:var(--muted);}
+  .tag{font-size:12px;color:var(--green-deep);background:var(--green-soft);
+    border:1px solid #cbf3e1;border-radius:999px;padding:6px 12px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;
+    box-shadow:0 12px 32px rgba(120,90,150,.07);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:720px){.grid{grid-template-columns:1fr;}}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:#5b5566;}
+  input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);
+    border-radius:12px;font-size:14px;color:var(--ink);background:#fff;outline:none;
+    transition:.18s;font-family:inherit;}
+  textarea{resize:vertical;min-height:78px;}
+  input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 0 4px rgba(255,126,182,.12);}
+  .actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
+  button{cursor:pointer;border:none;border-radius:12px;padding:12px 22px;font-size:15px;
+    font-weight:600;color:#fff;background:linear-gradient(135deg,var(--pink-deep),var(--pink));
+    box-shadow:0 8px 20px rgba(214,51,108,.22);transition:.18s;font-family:inherit;}
+  button:hover{transform:translateY(-1px);}
+  button:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+  button.ghost{background:#fff;color:var(--green-deep);border:1.5px solid #cbf3e1;
+    box-shadow:none;padding:10px 16px;font-size:13px;}
+  .hint{font-size:12px;color:var(--muted);}
+  section{margin-top:22px;}
+  .sec-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:15px;font-weight:700;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+  #output{min-height:260px;padding:20px;border-radius:16px;border:1px solid var(--line);
+    background:linear-gradient(180deg,#fff,#fffaff);white-space:pre-wrap;line-height:1.85;
+    font-size:14.5px;color:#38343f;overflow:auto;}
+  #output h2{font-size:15px;margin:16px 0 8px;color:var(--pink-deep);
+    border-left:4px solid var(--green);padding-left:10px;}
+  #output strong{color:var(--green-deep);font-weight:700;}
+  .placeholder{color:#b6b1c0;}
+  .status{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--pink);animation:blink 1s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .history{display:flex;flex-direction:column;gap:10px;}
+  .hitem{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fff;}
+  .hitem .meta{display:flex;justify-content:space-between;gap:10px;font-size:12px;
+    color:var(--muted);margin-bottom:6px;}
+  .hitem .req{font-weight:600;font-size:13.5px;margin-bottom:4px;color:var(--pink-deep);}
+  .hitem .res{font-size:13px;color:#5c5766;line-height:1.7;white-space:pre-wrap;
+    max-height:120px;overflow:hidden;position:relative;}
+  .hitem .res::after{content:"";position:absolute;inset:auto 0 0 0;height:36px;
+    background:linear-gradient(transparent,#fff);}
+  .toggle{font-size:12px;color:var(--pink-deep);cursor:pointer;margin-top:6px;display:inline-block;}
+  footer{margin-top:34px;text-align:center;font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">名</div>
+      <div>
+        <h1>AI 起名平台</h1>
+        <p>多模型 · 流式输出 · Supabase 历史记录</p>
+      </div>
+    </div>
+    <div class="tag">rangzijigenghao.online</div>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div style="grid-column:1/-1">
+        <label for="req">起名需求</label>
+        <textarea id="req" placeholder="例如：姓林，男孩，国风，两个字，寓意光明通达，避开生僻字"></textarea>
+      </div>
+      <div>
+        <label for="style">风格</label>
+        <select id="style">
+          <option value="国风雅致">国风雅致</option>
+          <option value="现代简约">现代简约</option>
+          <option value="英文名字">英文名字</option>
+          <option value="中性风">中性风</option>
+          <option value="">不限（按需求判断）</option>
+        </select>
+      </div>
+      <div>
+        <label for="model">AI 模型</label>
+        <select id="model">
+          <option value="doubao" selected>豆包（火山方舟）</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="qwen">通义千问（DashScope）</option>
+          <option value="kimi">Kimi（月之暗面）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="go">开始起名</button>
+      <button id="stop" class="ghost" disabled>停止</button>
+      <button id="refresh" class="ghost">刷新历史</button>
+      <span class="hint" id="tip">同一段调用代码，切换配置即可换模型</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-title"><span class="dot"></span>生成结果 <span class="status" id="status"></span></div>
+    <div id="output"><span class="placeholder">填写需求后点击「开始起名」，名字会像打字一样逐字出现。</span></div>
+  </section>
+
+  <section>
+    <div class="sec-title"><span class="dot" style="background:var(--pink)"></span>历史记录</div>
+    <div class="history" id="history"><span class="hint">暂无记录</span></div>
+  </section>
+
+  <footer>环境变量托管密钥 · 不写死在代码里 · Powered by 豆包大模型</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let controller = null;
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// 极简 Markdown 渲染：只处理标题、加粗、列表、换行，避免额外依赖
+function renderMarkdown(md){
+  return escapeHtml(md)
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\s*[-*] (.+)$/gm, '• $1')
+    .replace(/\n/g, '<br/>');
+}
+
+$('go').addEventListener('click', async () => {
+  const requirement = $('req').value.trim();
+  const style = $('style').value;
+  const model = $('model').value;
+
+  if (!requirement) {
+    $('output').innerHTML = '<span class="placeholder">请先填写起名需求，例如：姓林、男孩、国风、两个字。</span>';
+    return;
+  }
+
+  $('go').disabled = true;
+  $('stop').disabled = false;
+  $('status').innerHTML = '<span class="pulse"></span>生成中…';
+  $('output').textContent = '';
+
+  let text = '';
+  controller = new AbortController();
+
+  try {
+    const resp = await fetch('/api/name', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requirement, style, model }),
+      signal: controller.signal,
+    });
+
+    if (!resp.ok || !resp.body) {
+      const t = await resp.text().catch(() => '');
+      $('output').innerHTML = '<span class="placeholder">请求失败：' + escapeHtml(t || resp.status) + '</span>';
+      return;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop() || '';
+      for (const part of parts) {
+        const line = part.trim();
+        if (!line.startsWith('data:')) continue;
+        let evt;
+        try { evt = JSON.parse(line.slice(5).trim()); } catch { continue; }
+
+        if (evt.type === 'delta') {
+          text += evt.text;
+          $('output').innerHTML = renderMarkdown(text);
+          // 自动跟随滚动
+          $('output').scrollTop = $('output').scrollHeight;
+        } else if (evt.type === 'meta') {
+          $('status').innerHTML = '<span class="pulse"></span>生成中…（' + escapeHtml(evt.label) + ' · ' + escapeHtml(evt.model_name) + '）';
+        } else if (evt.type === 'warning') {
+          $('tip').textContent = evt.message;
+        } else if (evt.type === 'error') {
+          text += '\n\n⚠️ ' + evt.message;
+          $('output').innerHTML = renderMarkdown(text);
+        } else if (evt.type === 'done') {
+          $('status').textContent = '已生成' + (evt.length ? '（' + evt.length + ' 字）' : '');
+        }
+      }
+    }
+    $('status').textContent = $('status').textContent || '完成';
+    loadHistory();
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      $('status').textContent = '已停止';
+    } else {
+      $('output').innerHTML += '<div class="placeholder">中断：' + escapeHtml(e.message) + '</div>';
+    }
+  } finally {
+    $('go').disabled = false;
+    $('stop').disabled = true;
+    controller = null;
+  }
+});
+
+$('stop').addEventListener('click', () => {
+  if (controller) controller.abort();
+});
+
+$('refresh').addEventListener('click', loadHistory);
+
+async function loadHistory(){
+  const box = $('history');
+  try {
+    const r = await fetch('/api/history?limit=10');
+    const data = await r.json();
+    if (!data.items || !data.items.length) {
+      box.innerHTML = '<span class="hint">' + (data.notice || '暂无记录，先起一个名字吧') + '</span>';
+      return;
+    }
+    box.innerHTML = data.items.map((it) => {
+      const time = new Date(it.created_at).toLocaleString('zh-CN');
+      return '<div class="hitem">' +
+        '<div class="meta"><span>' + escapeHtml(it.user_requirement) + '</span><span>' + escapeHtml(time) + '</span></div>' +
+        '<div class="req">' + escapeHtml(it.model_name) + '</div>' +
+        '<div class="res">' + escapeHtml(it.name_result) + '</div>' +
+        '<span class="toggle">展开全文</span>' +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('.hitem').forEach((el) => {
+      el.querySelector('.toggle').addEventListener('click', (e) => {
+        const res = el.querySelector('.res');
+        const open = res.style.maxHeight === 'none';
+        res.style.maxHeight = open ? '120px' : 'none';
+        res.style.overflow = open ? 'hidden' : 'auto';
+        e.target.textContent = open ? '展开全文' : '收起';
+      });
+    });
+  } catch (e) {
+    box.innerHTML = '<span class="hint">历史加载失败：' + escapeHtml(e.message) + '</span>';
+  }
+}
+
+loadHistory();
+</script>
+</body>
+</html>
